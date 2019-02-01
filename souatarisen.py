@@ -4,6 +4,60 @@
 # (3n+1)卓(4(3n+1))人(4n+1)回戦の総当たり戦の卓組のコード、最初の段階から自動でやるプログラム。卓数を入力。時間計測あり。
 # 暫定版です。数年前に書いたコードなので、これから解読し、さらに手直しをします。
 
+def sa(a, b):  # リストaの要素からリストbの要素を引いたリストを返す
+    set_ab = set(a) - set(b)
+    list_ab = list(set_ab)
+    return list_ab
+
+def tai(n, tais2):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
+    if n >= nn2 + 1:
+        if n >= tais2:
+            if n >= tais2 + nn2 + 1:
+                n = tais2 - (n - tais2)
+            else:
+                n = n - tais2
+        else:
+            n = tais2 - n
+    return n
+
+def hantei(G2, t2, k2, i2, j2):
+    for pp in range(k2):
+        if G2[t2][pp][0] == i2:
+            return 1
+        if G2[t2][pp][1] == j2:
+            return 1
+    return 0
+
+def ikkaisen(n, tak3, nn3):
+    T = [0 for i in range(tak3)]
+
+    T[0] = [A[0], B[0], C[0], D[0]]
+    for i in range(0, nn3):
+        T[i + 1] = [B[N[0][i][0]], B[N[0][i][1]], C[N[0][i][2]],
+                    C[N[0][i][3]]]
+        T[i + nn3 + 1] = [C[N[1][i][0]], C[N[1][i][1]], D[N[1][i][2]],
+                          D[N[1][i][3]]]
+        T[i + nn3 * 2 + 1] = [D[N[2][i][0]], D[N[2][i][1]],
+                              B[N[2][i][2]], B[N[2][i][3]]]
+
+    return T
+
+def narabekae_issenbun(t):
+    V = []
+    for p in range(nin):
+        V.append(-3)
+
+    for k in range(nin):
+        for i in range(tak):
+            for j in range(4):
+                if U[t][i][j] == k:
+                    V[k] = i
+                    break
+            if V[k] != -3:
+                break
+    return V
+
+
 from sys import argv
 tak = int(argv[1])  # 卓数
 if tak % 3 != 1:
@@ -19,22 +73,6 @@ import time
 start = time.time()
 
 
-def sa(a, b):  # リストaの要素からリストbの要素を引いたリストを返す
-    set_ab = set(a) - set(b)
-    list_ab = list(set_ab)
-    return list_ab
-
-
-def tai(n, tais2):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
-    if n >= nn2 + 1:
-        if n >= tais2:
-            if n >= tais2 + nn2 + 1:
-                n = tais2 - (n - tais2)
-            else:
-                n = n - tais2
-        else:
-            n = tais2 - n
-    return n
 
 
 E = [[[0, 0] for i in range(nn2)] for j in range(nn2)]
@@ -56,19 +94,6 @@ itaishokakunou = [0, 0, 0]
 jtaishokakunou = [0, 0, 0]
 
 
-def hantei(
-    G2,
-    t2,
-    k2,
-    i2,
-    j2,
-    ):
-    for pp in range(k2):
-        if G2[t2][pp][0] == i2:
-            return 1
-        if G2[t2][pp][1] == j2:
-            return 1
-    return 0
 
 
 # print(F)
@@ -172,19 +197,6 @@ for tt in range(tais):
     D.append(tt + tais * 2 + 1)
 
 
-def ikkaisen(n, tak3, nn3):
-    T = [0 for i in range(tak3)]
-
-    T[0] = [A[0], B[0], C[0], D[0]]
-    for i in range(0, nn3):
-        T[i + 1] = [B[N[0][i][0]], B[N[0][i][1]], C[N[0][i][2]],
-                    C[N[0][i][3]]]
-        T[i + nn3 + 1] = [C[N[1][i][0]], C[N[1][i][1]], D[N[1][i][2]],
-                          D[N[1][i][3]]]
-        T[i + nn3 * 2 + 1] = [D[N[2][i][0]], D[N[2][i][1]],
-                              B[N[2][i][2]], B[N[2][i][3]]]
-
-    return T
 
 
 U = [0 for i in range(tais)]
@@ -212,20 +224,6 @@ for m in range(tais):
 W = [0 for i in range(tais)]
 
 
-def narabekae_issenbun(t):
-    V = []
-    for p in range(nin):
-        V.append(-3)
-
-    for k in range(nin):
-        for i in range(tak):
-            for j in range(4):
-                if U[t][i][j] == k:
-                    V[k] = i
-                    break
-            if V[k] != -3:
-                break
-    return V
 
 
 for x in range(tais):
