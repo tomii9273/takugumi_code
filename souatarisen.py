@@ -60,169 +60,172 @@ def narabekae_issenbun(t, n_players, n_tables, U):
                 break
     return V
 
-def main(n_tables):
-    if n_tables % 3 != 1:
-        raise ValueError('number of tables must be equivalent to 1 modulo 3.'
-                         )
+class Searcher():
+    def __init__(self, n_tables):
+        if n_tables % 3 != 1:
+            raise ValueError(
+                    'number of tables must be equivalent to 1 modulo 3.')
+        self.n_tables = n_tables
+        self.nn = int((n_tables - 1) / 3)  # n
+        self.nn2 = 2 * self.nn
+        self.n_players = 4 * n_tables  # 人数
+        self.n_games = 4 * self.nn + 1  # 対戦数
 
-    nn = int((n_tables - 1) / 3)  # n
-    nn2 = 2 * nn
-    n_players = 4 * n_tables  # 人数
-    n_games = 4 * nn + 1  # 対戦数
+    def prepare(self):
+        E = [[[0, 0] for i in range(self.nn2)] for j in range(self.nn2)]
 
-    E = [[[0, 0] for i in range(nn2)] for j in range(nn2)]
+        for i in range(self.nn2):
+            for j in range(i):
+                # here j < i holds.
+                E[i][j] = [i - j, tai(i + j + 1, self.n_games, self.nn2)]
+                E[j][i] = [i - j, tai(i + j + 1, self.n_games, self.nn2)]
 
-    for i in range(nn2):
-        for j in range(i):
-            # here j < i holds.
-            E[i][j] = [i - j, tai(i + j + 1, n_games, nn2)]
-            E[j][i] = [i - j, tai(i + j + 1, n_games, nn2)]
+        return E
 
+    def search(self, E):
+        F = list(range(1, self.nn2 + 1))
+        itaisho = list(range(self.nn2))
+        jtaisho = list(range(self.nn2))
 
-    search(nn, nn2, n_games, n_tables, n_players, E)
+        G = [[[-1, -1] for i in range(self.nn)] for j in range(3)]
 
-def search(nn, nn2, n_games, n_tables, n_players, E):
-    F = list(range(1, nn2 + 1))
-    itaisho = list(range(nn2))
-    jtaisho = list(range(nn2))
+        itaishokakunou = [0, 0, 0]
+        jtaishokakunou = [0, 0, 0]
 
-    G = [[[-1, -1] for i in range(nn)] for j in range(3)]
-
-    itaishokakunou = [0, 0, 0]
-    jtaishokakunou = [0, 0, 0]
-
-    fl = 0
-    yar = 0
-    t = 0
-    while t <= 2:
-        k = 0
-        while k <= nn - 1:
-            if yar == 0:
-                if k == 0:
-                    i = 0
-                else:
-                    i = G[t][k - 1][0]
-                    fl = 1
-            while i <= nn2 - 1:
+        fl = 0
+        yar = 0
+        t = 0
+        while t <= 2:
+            k = 0
+            while k <= self.nn - 1:
                 if yar == 0:
-                    if fl == 1:
-                        if k == 0:
-                            j = 0
-                        else:
-                            j = G[t][k - 1][1] + 1
-                            if j == nn2:
-                                j = 0
-                                i = i + 1
-                                if i == nn2:
-                                    i = nn2 - 1
-                                    j = nn2
+                    if k == 0:
+                        i = 0
                     else:
-                        j = 0
-                yar = 0
-                fl = 0
-                while j <= nn2 - 1:
+                        i = G[t][k - 1][0]
+                        fl = 1
+                while i <= self.nn2 - 1:
+                    if yar == 0:
+                        if fl == 1:
+                            if k == 0:
+                                j = 0
+                            else:
+                                j = G[t][k - 1][1] + 1
+                                if j == self.nn2:
+                                    j = 0
+                                    i = i + 1
+                                    if i == self.nn2:
+                                        i = self.nn2 - 1
+                                        j = self.nn2
+                        else:
+                            j = 0
+                    yar = 0
+                    fl = 0
+                    while j <= self.nn2 - 1:
 
-                    # print([t,k,i,j])
+                        # print([t,k,i,j])
 
-                    if E[i][j][0] in F and E[i][j][1] in F and i in itaisho \
-                        and j in jtaisho and hantei(G, t, k, i, j) == 0:
-                        G[t][k] = [i, j]
-                        F = sa(F, E[i][j])
-                        i = 1000
-                        j = 1000
-                    j = j + 1
-                i = i + 1
-                if i == nn2 and G[t][k] == [-1, -1]:  # 最後まで見つけられなかったとき、kを1つ戻す
-                    yar = 1
-                    k = k - 1
-                    if k == -1:
-                        t = t - 1
-                        k = nn - 1
-                    i = G[t][k][0]
-                    j = G[t][k][1] + 1
-                    if j == nn2:
-                        i = i + 1
-                        j = 0
-                    if k == nn - 1:  # tが1つ戻ったとき
-                        itaisho = itaishokakunou[t]
-                        jtaisho = jtaishokakunou[t]
-                        F = []
-                    F.append(E[G[t][k][0]][G[t][k][1]][0])
-                    F.append(E[G[t][k][0]][G[t][k][1]][1])
-                    G[t][k] = [-1, -1]
-            k = k + 1
-        F = []
-        dum = []
-        for ff in range(nn2):
-            F.append(ff + 1)
-            dum.append(ff)
-        for oo in range(nn):
-            dum = sa(dum, [G[t][oo][1]])
-        itaisho = dum
-        if t == 1:
-            dum2 = []
-            for uu in range(nn2):
-                dum2.append(uu)
-            for qq in range(nn):
-                dum2 = sa(dum2, [G[0][qq][0]])
-            jtaisho = dum2
-        itaishokakunou[t] = itaisho
-        jtaishokakunou[t] = jtaisho
-        t = t + 1
+                        if E[i][j][0] in F and E[i][j][1] in F and i in itaisho \
+                            and j in jtaisho and hantei(G, t, k, i, j) == 0:
+                            G[t][k] = [i, j]
+                            F = sa(F, E[i][j])
+                            i = 1000
+                            j = 1000
+                        j = j + 1
+                    i = i + 1
+                    if i == self.nn2 and G[t][k] == [-1, -1]:  # 最後まで見つけられなかったとき、kを1つ戻す
+                        yar = 1
+                        k = k - 1
+                        if k == -1:
+                            t = t - 1
+                            k = self.nn - 1
+                        i = G[t][k][0]
+                        j = G[t][k][1] + 1
+                        if j == self.nn2:
+                            i = i + 1
+                            j = 0
+                        if k == self.nn - 1:  # tが1つ戻ったとき
+                            itaisho = itaishokakunou[t]
+                            jtaisho = jtaishokakunou[t]
+                            F = []
+                        F.append(E[G[t][k][0]][G[t][k][1]][0])
+                        F.append(E[G[t][k][0]][G[t][k][1]][1])
+                        G[t][k] = [-1, -1]
+                k = k + 1
+            F = []
+            dum = []
+            for ff in range(self.nn2):
+                F.append(ff + 1)
+                dum.append(ff)
+            for oo in range(self.nn):
+                dum = sa(dum, [G[t][oo][1]])
+            itaisho = dum
+            if t == 1:
+                dum2 = []
+                for uu in range(self.nn2):
+                    dum2.append(uu)
+                for qq in range(self.nn):
+                    dum2 = sa(dum2, [G[0][qq][0]])
+                jtaisho = dum2
+            itaishokakunou[t] = itaisho
+            jtaishokakunou[t] = jtaisho
+            t = t + 1
 
-    generate_output(nn, nn2, n_games, n_tables, n_players, G)
+        return G
 
-def generate_output(nn, nn2, n_games, n_tables, n_players, G):
+    def generate_output(self, G):
 
-    N = [[0 for i in range(nn)] for j in range(3)]
+        N = [[0 for i in range(self.nn)] for j in range(3)]
 
-    for a in range(0, 3):
-        for b in range(0, nn):
-            p = G[a][b][0]
-            q = G[a][b][1]
-            N[a][b] = [nn2 - p, nn2 + 1 + p, nn2 - q, nn2 + 1 + q]
+        for a in range(0, 3):
+            for b in range(0, self.nn):
+                p = G[a][b][0]
+                q = G[a][b][1]
+                N[a][b] = [self.nn2 - p, self.nn2 + 1 + p, self.nn2 - q, self.nn2 + 1 + q]
 
-    A = [0]
-    B = list(range(              1,     n_games + 1))
-    C = list(range(    n_games + 1, 2 * n_games + 1))
-    D = list(range(2 * n_games + 1, 3 * n_games + 1))
+        A = [0]
+        B = list(range(                   1,     self.n_games + 1))
+        C = list(range(    self.n_games + 1, 2 * self.n_games + 1))
+        D = list(range(2 * self.n_games + 1, 3 * self.n_games + 1))
 
-    U = [0 for i in range(n_games)]
+        U = [0 for i in range(self.n_games)]
 
-    for m in range(n_games):
-        U[m] = ikkaisen(n_tables, nn, A, B, C, D, N)
+        for m in range(self.n_games):
+            U[m] = ikkaisen(self.n_tables, self.nn, A, B, C, D, N)
 
-        B = B[1:] + B[:1]
-        C = C[1:] + C[:1]
-        D = D[1:] + D[:1]
+            B = B[1:] + B[:1]
+            C = C[1:] + C[:1]
+            D = D[1:] + D[:1]
 
-    # print(U)
+        # print(U)
 
-    # U=[[[1回戦1卓],...,[1回戦(3n+1)卓]],[2回戦],...,[(4n+1)回戦]]
+        # U=[[[1回戦1卓],...,[1回戦(3n+1)卓]],[2回戦],...,[(4n+1)回戦]]
 
-    W = [0 for i in range(n_games)]
+        W = [0 for i in range(self.n_games)]
 
+        for x in range(self.n_games):
+            W[x] = narabekae_issenbun(x, self.n_players, self.n_tables, U)
 
+        # print(W)
 
+        # W=[[1回戦の(4(3n+1))人の卓番号],...,[(4n+1)回戦の(4(3n+1))人の卓番号]]
 
-    for x in range(n_games):
-        W[x] = narabekae_issenbun(x, n_players, n_tables, U)
+        # print(W)
 
-    # print(W)
+        # 卓番号を 0~3n → 1~(3n+1) に
 
-    # W=[[1回戦の(4(3n+1))人の卓番号],...,[(4n+1)回戦の(4(3n+1))人の卓番号]]
+        with open(str(self.n_tables) + 'sounc3.txt', 'w') as f:
+            for b in range(self.n_players):
+                f.write('\t'.join(str(W[a][b]+1) for a in range(self.n_games)))
+                f.write('\n')
 
-    # print(W)
+        # (卓数)sounc2.txtは縦軸がプレイヤー、横軸が戦数、成分が卓番号
 
-    # 卓番号を 0~3n → 1~(3n+1) に
-
-    with open(str(n_tables) + 'sounc3.txt', 'w') as f:
-        for b in range(n_players):
-            f.write('\t'.join(str(W[a][b]+1) for a in range(n_games)))
-            f.write('\n')
-
-    # (卓数)sounc2.txtは縦軸がプレイヤー、横軸が戦数、成分が卓番号
-
+def main(n_tables):
+    searcher = Searcher(n_tables)
+    searcher.generate_output(
+            searcher.search(
+                    searcher.prepare()))
 
 if __name__ == '__main__':
     from sys import argv
