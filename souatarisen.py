@@ -24,10 +24,8 @@ def tai(n, n_games, nn2):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
     return n
 
 def hantei(G2, t2, k2, i2, j2):
-    for pp in range(k2):
-        if G2[t2][pp][0] == i2:
-            return 1
-        if G2[t2][pp][1] == j2:
+    for pair in G2[t2][:k2]:
+        if pair[0] == i2 or pair[1]== j2:
             return 1
     return 0
 
@@ -36,19 +34,17 @@ def ikkaisen(n_tables, nn, A, B, C, D, N):
 
     T[0] = [A[0], B[0], C[0], D[0]]
     for i in range(0, nn):
-        T[i + 1] = [B[N[0][i][0]], B[N[0][i][1]], C[N[0][i][2]],
-                    C[N[0][i][3]]]
-        T[i + nn + 1] = [C[N[1][i][0]], C[N[1][i][1]], D[N[1][i][2]],
-                          D[N[1][i][3]]]
-        T[i + nn * 2 + 1] = [D[N[2][i][0]], D[N[2][i][1]],
-                              B[N[2][i][2]], B[N[2][i][3]]]
+        T[i          + 1] = [
+                B[N[0][i][0]], B[N[0][i][1]], C[N[0][i][2]], C[N[0][i][3]]]
+        T[i + nn     + 1] = [
+                C[N[1][i][0]], C[N[1][i][1]], D[N[1][i][2]], D[N[1][i][3]]]
+        T[i + nn * 2 + 1] = [
+                D[N[2][i][0]], D[N[2][i][1]], B[N[2][i][2]], B[N[2][i][3]]]
 
     return T
 
 def narabekae_issenbun(t, n_players, n_tables, U):
-    V = []
-    for p in range(n_players):
-        V.append(-3)
+    V = [-3 for p in range(n_players)]
 
     for k in range(n_players):
         for i in range(n_tables):
