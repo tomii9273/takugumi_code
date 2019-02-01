@@ -42,7 +42,7 @@ def ikkaisen(n, n_tables, nn3, A, B, C, D, N):
 
     return T
 
-def narabekae_issenbun(t):
+def narabekae_issenbun(t, n_players, n_tables, U):
     V = []
     for p in range(n_players):
         V.append(-3)
@@ -228,7 +228,7 @@ if __name__ == '__main__':
 
 
     for x in range(n_games):
-        W[x] = narabekae_issenbun(x)
+        W[x] = narabekae_issenbun(x, n_players, n_tables, U)
 
     # print(W)
 
