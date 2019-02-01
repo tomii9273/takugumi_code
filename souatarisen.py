@@ -78,6 +78,10 @@ def main(n_tables):
             E[i][j] = [i - j, tai(i + j + 1, n_games, nn2)]
             E[j][i] = [i - j, tai(i + j + 1, n_games, nn2)]
 
+
+    search(nn, nn2, n_games, n_tables, n_players, E)
+
+def search(nn, nn2, n_games, n_tables, n_players, E):
     F = list(range(1, nn2 + 1))
     itaisho = list(range(nn2))
     jtaisho = list(range(nn2))
@@ -86,8 +90,6 @@ def main(n_tables):
 
     itaishokakunou = [0, 0, 0]
     jtaishokakunou = [0, 0, 0]
-
-    # print(F)
 
     fl = 0
     yar = 0
@@ -168,7 +170,9 @@ def main(n_tables):
         jtaishokakunou[t] = jtaisho
         t = t + 1
 
-    # print(G)
+    generate_output(nn, nn2, n_games, n_tables, n_players, G)
+
+def generate_output(nn, nn2, n_games, n_tables, n_players, G):
 
     N = [[0 for i in range(nn)] for j in range(3)]
 
