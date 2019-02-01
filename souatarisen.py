@@ -28,16 +28,16 @@ def hantei(G2, t2, k2, i2, j2):
             return 1
     return 0
 
-def ikkaisen(n_tables, nn3, A, B, C, D, N):
+def ikkaisen(n_tables, nn, A, B, C, D, N):
     T = [0 for i in range(n_tables)]
 
     T[0] = [A[0], B[0], C[0], D[0]]
-    for i in range(0, nn3):
+    for i in range(0, nn):
         T[i + 1] = [B[N[0][i][0]], B[N[0][i][1]], C[N[0][i][2]],
                     C[N[0][i][3]]]
-        T[i + nn3 + 1] = [C[N[1][i][0]], C[N[1][i][1]], D[N[1][i][2]],
+        T[i + nn + 1] = [C[N[1][i][0]], C[N[1][i][1]], D[N[1][i][2]],
                           D[N[1][i][3]]]
-        T[i + nn3 * 2 + 1] = [D[N[2][i][0]], D[N[2][i][1]],
+        T[i + nn * 2 + 1] = [D[N[2][i][0]], D[N[2][i][1]],
                               B[N[2][i][2]], B[N[2][i][3]]]
 
     return T
