@@ -192,18 +192,9 @@ def main(n_tables):
     for m in range(n_games):
         U[m] = ikkaisen(n_tables, nn, A, B, C, D, N)
 
-        bb = B[0]
-        cc = C[0]
-        dd = D[0]
-
-        for i in range(n_games - 1):
-            B[i] = B[i + 1]
-            C[i] = C[i + 1]
-            D[i] = D[i + 1]
-
-        B[n_games - 1] = bb
-        C[n_games - 1] = cc
-        D[n_games - 1] = dd
+        B = B[1:] + B[:1]
+        C = C[1:] + C[:1]
+        D = D[1:] + D[:1]
 
     # print(U)
 
