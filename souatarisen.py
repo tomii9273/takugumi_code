@@ -9,15 +9,15 @@ def sa(a, b):  # リストaの要素からリストbの要素を引いたリス�
     list_ab = list(set_ab)
     return list_ab
 
-def tai(n, tais2):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
+def tai(n, n_games):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
     if n >= nn2 + 1:
-        if n >= tais2:
-            if n >= tais2 + nn2 + 1:
-                n = tais2 - (n - tais2)
+        if n >= n_games:
+            if n >= n_games + nn2 + 1:
+                n = n_games - (n - n_games)
             else:
-                n = n - tais2
+                n = n - n_games
         else:
-            n = tais2 - n
+            n = n_games - n
     return n
 
 def hantei(G2, t2, k2, i2, j2):
@@ -44,10 +44,10 @@ def ikkaisen(n, n_tables, nn3):
 
 def narabekae_issenbun(t):
     V = []
-    for p in range(nin):
+    for p in range(n_players):
         V.append(-3)
 
-    for k in range(nin):
+    for k in range(n_players):
         for i in range(n_tables):
             for j in range(4):
                 if U[t][i][j] == k:
@@ -67,8 +67,8 @@ if __name__ == '__main__':
 
     nn = int((n_tables - 1) / 3)  # n
     nn2 = 2 * nn
-    nin = 4 * n_tables  # 人数
-    tais = 4 * nn + 1  # 対戦数
+    n_players = 4 * n_tables  # 人数
+    n_games = 4 * nn + 1  # 対戦数
 
     import time
     start = time.time()
@@ -83,7 +83,7 @@ if __name__ == '__main__':
             if i != j:
                 a = min(i, j)
                 b = max(i, j)
-                E[i][j] = [b - a, tai(2 * (a + 1) - 1 + b - a, tais)]
+                E[i][j] = [b - a, tai(2 * (a + 1) - 1 + b - a, n_games)]
 
     F = [i + 1 for i in range(nn2)]
     itaisho = [i for i in range(nn2)]
@@ -192,50 +192,50 @@ if __name__ == '__main__':
     B = []
     C = []
     D = []
-    for tt in range(tais):
+    for tt in range(n_games):
         B.append(tt + 1)
-        C.append(tt + tais + 1)
-        D.append(tt + tais * 2 + 1)
+        C.append(tt + n_games + 1)
+        D.append(tt + n_games * 2 + 1)
 
 
 
 
-    U = [0 for i in range(tais)]
+    U = [0 for i in range(n_games)]
 
-    for m in range(tais):
+    for m in range(n_games):
         U[m] = ikkaisen(m, n_tables, nn)
 
         bb = B[0]
         cc = C[0]
         dd = D[0]
 
-        for i in range(tais - 1):
+        for i in range(n_games - 1):
             B[i] = B[i + 1]
             C[i] = C[i + 1]
             D[i] = D[i + 1]
 
-        B[tais - 1] = bb
-        C[tais - 1] = cc
-        D[tais - 1] = dd
+        B[n_games - 1] = bb
+        C[n_games - 1] = cc
+        D[n_games - 1] = dd
 
     # print(U)
 
     # U=[[[1回戦1卓],...,[1回戦(3n+1)卓]],[2回戦],...,[(4n+1)回戦]]
 
-    W = [0 for i in range(tais)]
+    W = [0 for i in range(n_games)]
 
 
 
 
-    for x in range(tais):
+    for x in range(n_games):
         W[x] = narabekae_issenbun(x)
 
     # print(W)
 
     # W=[[1回戦の(4(3n+1))人の卓番号],...,[(4n+1)回戦の(4(3n+1))人の卓番号]]
 
-    for a in range(tais):
-        for b in range(nin):
+    for a in range(n_games):
+        for b in range(n_players):
             W[a][b] = W[a][b] + 1
 
     # print(W)
@@ -243,9 +243,9 @@ if __name__ == '__main__':
     # 卓番号を 0~3n → 1~(3n+1) に
 
     f = open(str(n_tables) + 'sounc3.txt', 'w')
-    for b in range(nin):
+    for b in range(n_players):
         sep = ''
-        for a in range(tais):
+        for a in range(n_games):
             f.write(sep)
             f.write(str(W[a][b]))
             sep = '\t'
