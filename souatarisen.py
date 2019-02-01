@@ -28,7 +28,7 @@ def hantei(G2, t2, k2, i2, j2):
             return 1
     return 0
 
-def ikkaisen(n, n_tables, nn3):
+def ikkaisen(n, n_tables, nn3, A, B, C, D, N):
     T = [0 for i in range(n_tables)]
 
     T[0] = [A[0], B[0], C[0], D[0]]
@@ -203,7 +203,7 @@ if __name__ == '__main__':
     U = [0 for i in range(n_games)]
 
     for m in range(n_games):
-        U[m] = ikkaisen(m, n_tables, nn)
+        U[m] = ikkaisen(m, n_tables, nn, A, B, C, D, N)
 
         bb = B[0]
         cc = C[0]
