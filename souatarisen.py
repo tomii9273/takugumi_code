@@ -183,16 +183,9 @@ def main(n_tables):
             N[a][b] = [nn2 - p, nn2 + 1 + p, nn2 - q, nn2 + 1 + q]
 
     A = [0]
-    B = []
-    C = []
-    D = []
-    for tt in range(n_games):
-        B.append(tt + 1)
-        C.append(tt + n_games + 1)
-        D.append(tt + n_games * 2 + 1)
-
-
-
+    B = list(range(              1,     n_games + 1))
+    C = list(range(    n_games + 1, 2 * n_games + 1))
+    D = list(range(2 * n_games + 1, 3 * n_games + 1))
 
     U = [0 for i in range(n_games)]
 
