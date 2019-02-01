@@ -2,8 +2,11 @@
 # (3n+1)卓(4(3n+1))人(4n+1)回戦の総当たり戦の卓組のコード、最初の段階から自動でやるプログラム。卓数を入力。時間計測あり。
 # 暫定版です。数年前に書いたコードなので、これから解読し、さらに手直しをします。
 
+from sys import argv
+tak = int(argv[1])  # 卓数
+if tak % 3 != 1:
+    raise ValueError("number of tables must be equivalent to 1 modulo 3.")
 
-tak = int(input("takusuu? "))  # 卓数
 nn = int((tak-1) / 3)  # n
 nn2 = 2 * nn
 nin = 4 * tak  # 人数
