@@ -57,8 +57,7 @@ def narabekae_issenbun(t, n_players, n_tables, U):
                 break
     return V
 
-
-if __name__ == '__main__':
+def main():
     from sys import argv
     n_tables = int(argv[1])  # 卓数
     if n_tables % 3 != 1:
@@ -257,3 +256,6 @@ if __name__ == '__main__':
 
     elapsed_time = time.time() - start
     print(elapsed_time)
+
+if __name__ == '__main__':
+    main()
