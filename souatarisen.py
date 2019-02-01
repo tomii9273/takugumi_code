@@ -228,21 +228,13 @@ def main(n_tables):
 
     # W=[[1回戦の(4(3n+1))人の卓番号],...,[(4n+1)回戦の(4(3n+1))人の卓番号]]
 
-    for a in range(n_games):
-        for b in range(n_players):
-            W[a][b] = W[a][b] + 1
-
     # print(W)
 
     # 卓番号を 0~3n → 1~(3n+1) に
 
     f = open(str(n_tables) + 'sounc3.txt', 'w')
     for b in range(n_players):
-        sep = ''
-        for a in range(n_games):
-            f.write(sep)
-            f.write(str(W[a][b]))
-            sep = '\t'
+        f.write('\t'.join(str(W[a][b]+1) for a in range(n_games)))
         f.write('\n')
 
     f.close()
