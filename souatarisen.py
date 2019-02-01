@@ -73,11 +73,10 @@ def main(n_tables):
     E = [[[0, 0] for i in range(nn2)] for j in range(nn2)]
 
     for i in range(nn2):
-        for j in range(nn2):
-            if i != j:
-                a = min(i, j)
-                b = max(i, j)
-                E[i][j] = [b - a, tai(2 * (a + 1) - 1 + b - a, n_games, nn2)]
+        for j in range(i):
+            # here j < i holds.
+            E[i][j] = [i - j, tai(i + j + 1, n_games, nn2)]
+            E[j][i] = [i - j, tai(i + j + 1, n_games, nn2)]
 
     F = [i + 1 for i in range(nn2)]
     itaisho = [i for i in range(nn2)]
