@@ -232,12 +232,10 @@ def main(n_tables):
 
     # 卓番号を 0~3n → 1~(3n+1) に
 
-    f = open(str(n_tables) + 'sounc3.txt', 'w')
-    for b in range(n_players):
-        f.write('\t'.join(str(W[a][b]+1) for a in range(n_games)))
-        f.write('\n')
-
-    f.close()
+    with open(str(n_tables) + 'sounc3.txt', 'w') as f:
+        for b in range(n_players):
+            f.write('\t'.join(str(W[a][b]+1) for a in range(n_games)))
+            f.write('\n')
 
     # (卓数)sounc2.txtは縦軸がプレイヤー、横軸が戦数、成分が卓番号
 
