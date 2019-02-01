@@ -105,7 +105,7 @@ while t<=2 :
                 j=j+1
             i=i+1
             if i==nn2 and G[t][k]==[-1,-1] :  # 最後まで見つけられなかったとき、kを1つ戻す
-                yar=1 
+                yar=1
                 k=k-1
                 if k==-1 :
                     t=t-1
@@ -165,13 +165,13 @@ for tt in range(tais) :
 
 def ikkaisen(n,tak3,nn3) :
     T=[0 for i in range(tak3)]
-    
+
     T[0]=[A[0],B[0],C[0],D[0]]
     for i in range(0,nn3) :
         T[i+1]=[B[N[0][i][0]],B[N[0][i][1]],C[N[0][i][2]],C[N[0][i][3]]]
         T[i+nn3+1]=[C[N[1][i][0]],C[N[1][i][1]],D[N[1][i][2]],D[N[1][i][3]]]
         T[i+nn3*2+1]=[D[N[2][i][0]],D[N[2][i][1]],B[N[2][i][2]],B[N[2][i][3]]]
-          
+
     return T
 
 U=[0 for i in range(tais)]
@@ -237,9 +237,11 @@ for a in range(tais) :
 
 f = open(str(tak)+'sounc3.txt', 'w')
 for b in range(nin) :
+    sep = ""
     for a in range(tais) :
+        f.write(sep)
         f.write(str(W[a][b]))
-        f.write("\t")
+        sep = "\t"
     f.write("\n")
 
 f.close()
