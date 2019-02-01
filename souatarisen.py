@@ -28,8 +28,8 @@ def hantei(G2, t2, k2, i2, j2):
             return 1
     return 0
 
-def ikkaisen(n, tak3, nn3):
-    T = [0 for i in range(tak3)]
+def ikkaisen(n, n_tables, nn3):
+    T = [0 for i in range(n_tables)]
 
     T[0] = [A[0], B[0], C[0], D[0]]
     for i in range(0, nn3):
@@ -48,7 +48,7 @@ def narabekae_issenbun(t):
         V.append(-3)
 
     for k in range(nin):
-        for i in range(tak):
+        for i in range(n_tables):
             for j in range(4):
                 if U[t][i][j] == k:
                     V[k] = i
@@ -60,14 +60,14 @@ def narabekae_issenbun(t):
 
 if __name__ == '__main__':
     from sys import argv
-    tak = int(argv[1])  # 卓数
-    if tak % 3 != 1:
+    n_tables = int(argv[1])  # 卓数
+    if n_tables % 3 != 1:
         raise ValueError('number of tables must be equivalent to 1 modulo 3.'
                          )
 
-    nn = int((tak - 1) / 3)  # n
+    nn = int((n_tables - 1) / 3)  # n
     nn2 = 2 * nn
-    nin = 4 * tak  # 人数
+    nin = 4 * n_tables  # 人数
     tais = 4 * nn + 1  # 対戦数
 
     import time
@@ -203,7 +203,7 @@ if __name__ == '__main__':
     U = [0 for i in range(tais)]
 
     for m in range(tais):
-        U[m] = ikkaisen(m, tak, nn)
+        U[m] = ikkaisen(m, n_tables, nn)
 
         bb = B[0]
         cc = C[0]
@@ -242,7 +242,7 @@ if __name__ == '__main__':
 
     # 卓番号を 0~3n → 1~(3n+1) に
 
-    f = open(str(tak) + 'sounc3.txt', 'w')
+    f = open(str(n_tables) + 'sounc3.txt', 'w')
     for b in range(nin):
         sep = ''
         for a in range(tais):
