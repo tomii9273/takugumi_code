@@ -9,7 +9,7 @@ def sa(a, b):  # リストaの要素からリストbの要素を引いたリス�
     list_ab = list(set_ab)
     return list_ab
 
-def tai(n, n_games):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
+def tai(n, n_games, nn2):  # 0,1,2,...,2n,2n,...,2,1,0,1,...
     if n >= nn2 + 1:
         if n >= n_games:
             if n >= n_games + nn2 + 1:
@@ -83,7 +83,7 @@ if __name__ == '__main__':
             if i != j:
                 a = min(i, j)
                 b = max(i, j)
-                E[i][j] = [b - a, tai(2 * (a + 1) - 1 + b - a, n_games)]
+                E[i][j] = [b - a, tai(2 * (a + 1) - 1 + b - a, n_games, nn2)]
 
     F = [i + 1 for i in range(nn2)]
     itaisho = [i for i in range(nn2)]
