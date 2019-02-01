@@ -4,6 +4,9 @@
 # (3n+1)卓(4(3n+1))人(4n+1)回戦の総当たり戦の卓組のコード、最初の段階から自動でやるプログラム。卓数を入力。時間計測あり。
 # 暫定版です。数年前に書いたコードなので、これから解読し、さらに手直しをします。
 
+from logging import getLogger
+logger = getLogger(__name__)
+
 def sa(a, b):  # リストaの要素からリストbの要素を引いたリストを返す
     set_ab = set(a) - set(b)
     list_ab = list(set_ab)
@@ -57,9 +60,7 @@ def narabekae_issenbun(t, n_players, n_tables, U):
                 break
     return V
 
-def main():
-    from sys import argv
-    n_tables = int(argv[1])  # 卓数
+def main(n_tables):
     if n_tables % 3 != 1:
         raise ValueError('number of tables must be equivalent to 1 modulo 3.'
                          )
@@ -68,12 +69,6 @@ def main():
     nn2 = 2 * nn
     n_players = 4 * n_tables  # 人数
     n_games = 4 * nn + 1  # 対戦数
-
-    import time
-    start = time.time()
-
-
-
 
     E = [[[0, 0] for i in range(nn2)] for j in range(nn2)]
 
@@ -254,8 +249,12 @@ def main():
 
     # (卓数)sounc2.txtは縦軸がプレイヤー、横軸が戦数、成分が卓番号
 
-    elapsed_time = time.time() - start
-    print(elapsed_time)
 
 if __name__ == '__main__':
-    main()
+    from sys import argv
+    from datetime import datetime
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    start = datetime.now()
+    main(int(argv[1]))
+    logger.info('{}'.format(datetime.now() - start))
