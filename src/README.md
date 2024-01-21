@@ -15,5 +15,12 @@
 
 ## 4ma_nukeari_6and1_sen.py
 
-抜け番あり 6 + 1 戦を作成する。卓数は 7 以上。`../takugumi_txt` 内の 4 チーム戦の卓組を使用する。  
 `python 4ma_nukeari_6and1_sen.py -t [卓数]`
+
+抜け番あり 6 + 1 戦を作成します。`../takugumi_txt` 内の既存の 4 チーム戦の卓組を使用します。
+
+| 卓数    | 作成可否 | 実行時間 [s] |
+| ------- | -------- | ------------ |
+| 7 ～ 30 | 可       | < 1          |
+
+参考: [抜け番あり 1 人 6 戦 合計 7 戦 卓組作成方法](https://tomii6614.web.fc2.com/nukeari_6and1_sen_method.html)
