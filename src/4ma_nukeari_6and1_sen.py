@@ -157,16 +157,16 @@ def make_takugumi(n_taku: int) -> None:
 
     p_cands = []
 
-    for p in range(n_player):
-        for q in range(p + 1, n_player):
-            if p // n_taku == q // n_taku:
+    for p0 in range(n_player):
+        for p1 in range(p0 + 1, n_player):
+            if p0 // n_taku == p1 // n_taku:
                 continue
             cnt = 0
             for s in range(n_taisen):
-                if takugumi[s][p] == takugumi[s][q]:
+                if takugumi[s][p0] == takugumi[s][p1]:
                     cnt += 1
             if cnt == 0:
-                p_cands.append((p, q))
+                p_cands.append((p0, p1))
 
     for p0, p1 in p_cands:
         print(f"p0 = {p0}, p1 = {p1} start")
