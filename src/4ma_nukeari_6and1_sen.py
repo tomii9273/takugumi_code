@@ -172,11 +172,16 @@ def make_takugumi(n_taku: int) -> None:
         print(f"p0 = {p0}, p1 = {p1} start")
 
         for s0 in range(1, 6):
-            new_takugumi = np.full((n_taisen + 1, n_player + 2), -1, dtype=int)
-            new_takugumi[:n_taisen, :n_player] = takugumi
-
             del_taku_0 = takugumi[s0, p0]
             del_taku_1 = takugumi[s0, p1]
+            if (
+                del_taku_0 in takugumi[1:, p1].flatten()
+                or del_taku_1 in takugumi[1:, p0].flatten()
+            ):  # 操作 4 の条件
+                continue
+
+            new_takugumi = np.full((n_taisen + 1, n_player + 2), -1, dtype=int)
+            new_takugumi[:n_taisen, :n_player] = takugumi
 
             for s in range(1, 6):
                 for p in range((p0 // n_taku) * n_taku, (p0 // n_taku + 1) * n_taku):
@@ -193,9 +198,9 @@ def make_takugumi(n_taku: int) -> None:
             new_takugumi[6, -2] = 3
             new_takugumi[6, -1] = 3
 
-            if check(new_takugumi):
-                array_to_txt(new_takugumi)
-                return True
+            assert check(new_takugumi)
+            array_to_txt(new_takugumi)
+            return True
 
     return False
 
