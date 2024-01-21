@@ -141,7 +141,10 @@ def array_to_txt(takugumi: np.ndarray) -> None:
 
 
 def make_takugumi(n_taku: int) -> None:
-    """n_taku 卓の抜け番あり 6 + 1 戦の卓組の作成を試みる。作成できたら True を返す。"""
+    """
+    n_taku 卓の抜け番あり 6 + 1 戦の卓組の作成を試みる。作成できたら True を返す。
+    参考: https://tomii6614.web.fc2.com/nukeari_6and1_sen_method.html
+    """
     assert n_taku >= 7
 
     takugumi = takugumi_to_array(
@@ -155,7 +158,7 @@ def make_takugumi(n_taku: int) -> None:
     n_player = takugumi.shape[1]
     assert n_taku == n_player // GAME_N
 
-    p_cands = []
+    p_cands = []  # 2 選手 (A, B) の候補
 
     for p0 in range(n_player):
         for p1 in range(p0 + 1, n_player):
