@@ -5,8 +5,9 @@ import time
 def make_takugumi(n_taku, n_game):
     """
     n_game 人麻雀 n_game チーム戦を、n_taku 卓で n_taku 戦分作成する。
-    以下の条件を必要とする。
+    以下の条件を必要とし、また以下の条件を満たせば必ず作成できる (必要十分条件)。
     「2 以上 n_game 未満の任意の整数 m について、n_taku を m で割った余りが 0 にならない。」
+    参考: https://tomii6614.web.fc2.com/4team_sen_method.html の ① (n_game = 4 の場合)
     """
     assert n_game <= n_taku
     for m in range(2, n_game):
@@ -20,10 +21,12 @@ def make_takugumi(n_taku, n_game):
             for g in range(n_game):
                 E[s][t + g * n_taku] = (t + g * s) % n_taku
 
+    # 卓番号を 1-indexed に変更
     for s in range(n_taisen):
         for p in range(n_game * n_taku):
             E[s][p] = E[s][p] + 1
 
+    # txt として保存
     with open(
         f"{n_taku}taku_{n_game*n_taku}nin_{n_taisen}sen_{n_game}team.txt", "w"
     ) as f:
