@@ -23,4 +23,6 @@ $T$ 卓の抜け番あり 6 + 1 戦を作成します。`../takugumi_txt` 内の
 | -------- | -------- | ------------ |
 | 7 ～ 30  | 可       | < 1          |
 
-参考: [抜け番あり 1 人 6 戦 合計 7 戦 卓組作成方法](https://tomii6614.web.fc2.com/nukeari_6and1_sen_method.html)
+### 参考
+
+[抜け番あり 1 人 6 戦 合計 7 戦 卓組作成方法](https://tomii6614.web.fc2.com/nukeari_6and1_sen_method.html)
