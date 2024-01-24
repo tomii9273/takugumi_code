@@ -9,7 +9,6 @@ def make_takugumi(n_taku, n_game):
     「2 以上 n_game 未満の任意の整数 m について、n_taku を m で割った余りが 0 にならない。」
     参考: https://tomii6614.web.fc2.com/4team_sen_method.html の ① (n_game = 4 の場合)
     """
-    assert n_game <= n_taku
     for m in range(2, n_game):
         assert n_taku % m != 0
 
