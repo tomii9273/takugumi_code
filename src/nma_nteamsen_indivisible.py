@@ -53,4 +53,4 @@ if __name__ == "__main__":
     )
 
     elapsed_time = time.time() - start
-    print(f"time: {elapsed_time:.2} sec")
+    print(f"time: {elapsed_time:.2f} sec")

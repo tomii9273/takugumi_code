@@ -218,4 +218,4 @@ if __name__ == "__main__":
     print("found" if make_takugumi(n_taku=args.n_taku) else "notfound")
 
     elapsed_time = time.time() - start
-    print(f"time: {elapsed_time:.2} sec")
+    print(f"time: {elapsed_time:.2f} sec")
