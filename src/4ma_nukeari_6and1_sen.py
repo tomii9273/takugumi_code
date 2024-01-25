@@ -140,7 +140,7 @@ def array_to_txt(takugumi: np.ndarray) -> None:
             f.write("\n")
 
 
-def make_takugumi(n_taku: int) -> None:
+def make_takugumi(n_taku: int) -> bool:
     """
     n_taku 卓の抜け番あり 6 + 1 戦の卓組の作成を試みる。作成できたら True を返す。
     参考: https://tomii6614.web.fc2.com/nukeari_6and1_sen_method.html
@@ -218,4 +218,4 @@ if __name__ == "__main__":
     print("found" if make_takugumi(n_taku=args.n_taku) else "notfound")
 
     elapsed_time = time.time() - start
-    print(f"time: {elapsed_time:.2} sec")
+    print(f"time: {elapsed_time:.2f} sec")
