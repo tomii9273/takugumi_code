@@ -14,16 +14,16 @@ def make_takugumi(n_taku: int, n_game: int) -> bool:
 
     n_taisen = n_taku
 
-    E = [[0] * (n_game * n_taku) for _ in range(n_taisen)]
+    takugumi = [[0] * (n_game * n_taku) for _ in range(n_taisen)]
     for s in range(n_taisen):
         for t in range(n_taku):
             for g in range(n_game):
-                E[s][t + g * n_taku] = (t + g * s) % n_taku
+                takugumi[s][t + g * n_taku] = (t + g * s) % n_taku
 
     # 卓番号を 1-indexed に変更
     for s in range(n_taisen):
         for p in range(n_game * n_taku):
-            E[s][p] = E[s][p] + 1
+            takugumi[s][p] = takugumi[s][p] + 1
 
     # txt として保存
     with open(
