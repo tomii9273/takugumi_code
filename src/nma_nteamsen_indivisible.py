@@ -2,7 +2,7 @@ import argparse
 import time
 
 
-def make_takugumi(n_taku, n_game):
+def make_takugumi(n_taku: int, n_game: int) -> bool:
     """
     n_game 人麻雀 n_game チーム戦を、n_taku 卓で n_taku 戦分作成する。
     以下の条件を必要とし、また以下の条件を満たせば必ず作成できる (必要十分条件)。
