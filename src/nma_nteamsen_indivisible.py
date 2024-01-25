@@ -31,7 +31,7 @@ def make_takugumi(n_taku: int, n_game: int) -> bool:
     ) as f:
         for p in range(n_game * n_taku):
             for s in range(n_taisen):
-                f.write(str(E[s][p]))
+                f.write(str(takugumi[s][p]))
                 f.write("\t")
             f.write("\n")
 
