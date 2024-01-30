@@ -11,25 +11,25 @@ def chofuku_check(n: int) -> bool:
     return True
 
 
-def dfs_top_C(m: int, L: list[int]) -> bool:
+def dfs_top_C(now_taisen: int, taku_no_list: list[int]) -> bool:
     """
     チーム C (3 チーム目) の先頭の選手の卓番号を深さ優先探索で探索する。
     最終戦まで求められたら True を返す。
-    m: 現在の深さ (m 戦目 (0-indexed) を探索)
-    L: m 戦目以降で使うことのできる卓番号のリスト
+    now_taisen: 現在の深さ (now_taisen 戦目 (0-indexed) を探索する)
+    taku_no_list: now_taisen 戦目以降で使うことのできる卓番号のリスト
     """
-    if m == n_taisen:
+    if now_taisen == n_taisen:
         maketxt()
         return True
     else:
-        for b in L:
-            top_C[m] = b
-            if chofuku_check(m):
-                L_new = L[:]
-                L_new.pop(L.index(b))
-                if dfs_top_C(m + 1, L_new):
+        for taku_no in taku_no_list:
+            top_C[now_taisen] = taku_no
+            if chofuku_check(now_taisen):
+                taku_no_list_new = taku_no_list[:]
+                taku_no_list_new.pop(taku_no_list.index(taku_no))
+                if dfs_top_C(now_taisen + 1, taku_no_list_new):
                     return True
-        top_C[m] = -1
+        top_C[now_taisen] = -1
     return False
 
 
