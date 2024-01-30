@@ -12,6 +12,7 @@
 - メモリ: 16.0 GB
 - OS: Windows 10 Home 64bit
 - Python バージョン: 3.11.5
+- ライブラリのバージョン: `../requirements.txt` 参照
 
 ## 4ma_nukeari_6and1_sen.py
 
