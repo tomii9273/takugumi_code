@@ -1,0 +1,30 @@
+name: Check Math Formula
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-math-formula:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check
+        run: |
+          n_head_line=$(grep -o '^\$' src/README.md | wc -l)
+          n_tail_line=$(grep -o '\$$' src/README.md | wc -l)
+          n_head_bracket=$(grep -o '(\$' src/README.md | wc -l)
+          n_tail_bracket=$(grep -o '\$)' src/README.md | wc -l)
+          n_head=$(grep -o ' \$' src/README.md | wc -l)
+          n_tail=$(grep -o '\$ ' src/README.md | wc -l)
+          n_valid=$((n_head_line+n_tail_line+n_head_bracket+n_tail_bracket+n_head+n_tail))
+          n_all=$(grep -o '\$' src/README.md | wc -l)
+
+          if [ $n_all -ne $n_valid ]; then
+              echo $n_all
+              echo $n_valid
+              exit 1
+          fi
+        shell: bash
