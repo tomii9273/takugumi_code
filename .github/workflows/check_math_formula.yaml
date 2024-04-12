@@ -11,6 +11,13 @@ jobs:
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v3
+
+      - name: List files in the src directory
+        run: ls -la src/
+
+      - name: Display the content of README.md
+        run: cat src/README.md
+
       - name: Check
         run: |
           echo "start"
