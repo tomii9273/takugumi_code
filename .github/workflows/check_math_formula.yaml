@@ -36,6 +36,18 @@ jobs:
           echo "Number of 'f': $c"
           echo "finished"
 
+      - name: Check grep output regexp
+        run: |
+          echo "start 0"
+          grep -E '^' src/README.md
+          echo "start 1"
+          grep -E '\$' src/README.md
+          echo "start 2"
+          grep '^' src/README.md
+          echo "start 3"
+          grep '\$' src/README.md
+          echo "finished"
+
       - name: Check
         run: |
           echo "start"
