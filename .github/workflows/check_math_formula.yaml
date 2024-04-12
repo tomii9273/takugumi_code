@@ -52,13 +52,21 @@ jobs:
         run: |
           echo "start"
           n_head_line=$(grep -o '^\$' src/README.md | wc -l)
+          echo "n_head_line: $n_head_line"
           n_tail_line=$(grep -o '\$$' src/README.md | wc -l)
+          echo "n_tail_line: $n_tail_line"
           n_head_bracket=$(grep -o '(\$' src/README.md | wc -l)
+          echo "n_head_bracket: $n_head_bracket"
           n_tail_bracket=$(grep -o '\$)' src/README.md | wc -l)
+          echo "n_tail_bracket: $n_tail_bracket"
           n_head=$(grep -o ' \$' src/README.md | wc -l)
+          echo "n_head: $n_head"
           n_tail=$(grep -o '\$ ' src/README.md | wc -l)
+          echo "n_tail: $n_tail"
           n_valid=$((n_head_line+n_tail_line+n_head_bracket+n_tail_bracket+n_head+n_tail))
+          echo "n_valid: $n_valid"
           n_all=$(grep -o '\$' src/README.md | wc -l)
+          echo "n_all: $n_all"
 
           echo "count end"
 
