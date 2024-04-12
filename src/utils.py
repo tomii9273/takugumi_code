@@ -121,7 +121,10 @@ def check(takugumi: np.ndarray) -> bool:
 
 
 def array_to_txt(takugumi: np.ndarray, filename: str) -> None:
-    """卓組の配列を txt ファイルに変換"""
+    """
+    卓組の配列 (軸は (対戦, 選手)) を txt ファイル
+    (軸は (選手, 対戦)、すなわち 1 行目が選手 1 の各対戦の卓番号を表す) に変換
+    """
     n_taisen = takugumi.shape[0]
     n_player = takugumi.shape[1]
     with open(filename, "w") as f:
