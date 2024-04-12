@@ -18,6 +18,24 @@ jobs:
       - name: Display the content of README.md
         run: cat src/README.md
 
+      - name: Show version of grep
+        run: grep --version
+
+      - name: Check grep output for 'f'
+        run: |
+          echo "start 00"
+          grep 'f' src/README.md
+          echo "start 0"
+          grep -o 'f' src/README.md
+          echo "start 1"
+          grep -o 'f' src/README.md | wc -l
+          echo "start 2"
+          echo "Number of 'f': $(grep -o 'f' src/README.md | wc -l)"
+          echo "start 3"
+          c=$(grep -o 'f' src/README.md | wc -l)
+          echo "Number of 'f': $c"
+          echo "finished"
+
       - name: Check
         run: |
           echo "start"
