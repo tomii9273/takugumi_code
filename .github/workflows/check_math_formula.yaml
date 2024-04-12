@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check
         run: |
+          echo "start"
           n_head_line=$(grep -o '^\$' src/README.md | wc -l)
           n_tail_line=$(grep -o '\$$' src/README.md | wc -l)
           n_head_bracket=$(grep -o '(\$' src/README.md | wc -l)
@@ -22,9 +23,24 @@ jobs:
           n_valid=$((n_head_line+n_tail_line+n_head_bracket+n_tail_bracket+n_head+n_tail))
           n_all=$(grep -o '\$' src/README.md | wc -l)
 
+          echo "count end"
+
+          echo $n_head_line
+          echo $n_tail_line
+          echo $n_head_bracket
+          echo $n_tail_bracket
+          echo $n_head
+          echo $n_tail
+          echo $n_valid
+          echo $n_all
+
+          echo "output end"
+
           if [ $n_all -ne $n_valid ]; then
+              echo "not equal"
               echo $n_all
               echo $n_valid
-              exit 1
+              exit 2
           fi
+          echo "finished"
         shell: bash
