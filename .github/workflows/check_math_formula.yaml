@@ -13,19 +13,26 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check
         run: |
-          n_head_line=$(grep -o '^\$' src/README.md | wc -l)
-          n_tail_line=$(grep -o '\$$' src/README.md | wc -l)
-          n_head_bracket=$(grep -o '(\$' src/README.md | wc -l)
-          n_tail_bracket=$(grep -o '\$)' src/README.md | wc -l)
-          n_head=$(grep -o ' \$' src/README.md | wc -l)
-          n_tail=$(grep -o '\$ ' src/README.md | wc -l)
-          n_valid=$((n_head_line+n_tail_line+n_head_bracket+n_tail_bracket+n_head+n_tail))
+          n_valid=0
+          for str in '^\$' '\$$' '\(\$' '\$\)' ' \$' '\$ '
+          do  
+              # grep はヒットしなかった場合に終了ステータスが 1 になり、GitHub Actions がエラーで止まってしまうため、先に sed でヒットするかを確認している
+              exist=$(sed -n -E -e "/${str}/p" src/README.md)
+              if [ -n "$exist" ]; then
+                  n_tmp=$(grep -o -E "${str}" src/README.md | wc -l)
+                  n_valid=$((n_valid+n_tmp))
+              fi
+              echo "now n_valid: $n_valid"
+          done
+          echo "final n_valid: $n_valid"
+
           n_all=$(grep -o '\$' src/README.md | wc -l)
+          echo "final n_all: $n_all"
+
           if [ $n_all -ne $n_valid ]; then
-              echo "not equal"
-              echo $n_all
-              echo $n_valid
-              exit 2
+              echo "Error: Invalid math formula found."
+              exit 1
           fi
-          echo "finished"
+          echo "Success: All math formulas are valid."
+
         shell: bash
