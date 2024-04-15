@@ -48,6 +48,23 @@ $T$ 卓の抜け番あり 6 + 1 戦の作成を試みます。
 
 [抜け番あり 1 人 6 戦 合計 7 戦 卓組作成方法](https://tomii6614.web.fc2.com/nukeari_6and1_sen_method.html)
 
+## 4ma_nukeari_8and1_sen.py
+
+`python 4ma_nukeari_8and1_sen.py -t [人数P]`
+
+$P$ 人 $[P/4]$ 卓の抜け番あり 8 + 1 戦 ($P$ が 4 の倍数でない場合) の作成を試みます。  
+`../takugumi_txt` 内の既存の 4 チーム戦の卓組 (同じ卓を複数回使用する人がいないよう調整済) を使用します。
+
+### 実行結果
+
+| 卓数 $T$                   | 作成可否 | 実行時間 [s] |
+| -------------------------- | -------- | -----------: |
+| 39 ～ 122 (4 の倍数を除く) | 可       |          < 1 |
+
+### 参考
+
+[抜け番あり 1 人 8 戦 合計 9 戦 卓組作成方法](https://tomii6614.web.fc2.com/nukeari_8and1_sen_method.html)
+
 ## nma_nteamsen_indivisible.py
 
 `python nma_nteamsen_indivisible.py -g [ゲーム人数G] -t [卓数T]`
