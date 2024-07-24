@@ -16,7 +16,7 @@
 
 ## 4ma_nukeari_4and1_sen.py
 
-`python 4ma_nukeari_4and1_sen.py -t [人数P]`
+`python 4ma_nukeari_4and1_sen.py -p [人数P]`
 
 $P$ 人 $[P/4]$ 卓の抜け番あり 4 + 1 戦 ($P$ が 4 の倍数でない場合) の作成を試みます。  
 `../takugumi_txt` 内の既存の 4 チーム戦の卓組 (同じ卓を複数回使用する人がいないよう調整済) を使用します。
@@ -50,7 +50,7 @@ $T$ 卓 $4T+2$ 人の抜け番あり 6 + 1 戦の作成を試みます。
 
 ## 4ma_nukeari_8and1_sen.py
 
-`python 4ma_nukeari_8and1_sen.py -t [人数P]`
+`python 4ma_nukeari_8and1_sen.py -p [人数P]`
 
 $P$ 人 $[P/4]$ 卓の抜け番あり 8 + 1 戦 ($P$ が 4 の倍数でない場合) の作成を試みます。  
 `../takugumi_txt` 内の既存の 4 チーム戦の卓組 (同じ卓を複数回使用する人がいないよう調整済) を使用します。
