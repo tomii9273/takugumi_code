@@ -32,22 +32,27 @@ combs = [list(combinations(range(1, N_GAME), i)) for i in range(N_GAME)]
 
 
 def getind2(p0, p1):
+    """2 人組を整数に変換 (index 用)"""
     return min(p0, p1) * p + max(p0, p1)
 
 
 def getind3(p0, p1, p2):
+    """3 人組を整数に変換 (index 用)"""
     tmp = [p0, p1, p2]
     tmp.sort()
     return tmp[0] * pp + tmp[1] * p + tmp[2]
 
 
 def getind4(p0, p1, p2, p3):
+    """4 人組を整数に変換 (index 用)"""
     tmp = [p0, p1, p2, p3]
     tmp.sort()
     return tmp[0] * ppp + tmp[1] * pp + tmp[2] * p + tmp[3]
 
 
 def remove_count(pr, pa, pb, pc):
+    """選手 pr の、pa, pb, pc との同卓を削除する (各種同卓回数などを 1 減らす)"""
+
     for p0 in [pa, pb, pc]:
         tpl = (min(pr, p0), max(pr, p0))
         cnt = count2[getind2(pr, p0)]
@@ -142,6 +147,8 @@ def remove_count(pr, pa, pb, pc):
 
 
 def add_count(pr, pa, pb, pc):
+    """選手 pr の、pa, pb, pc との同卓を追加する (各種同卓回数などを 1 増やす)"""
+
     for p0 in [pa, pb, pc]:
         tpl = (min(pr, p0), max(pr, p0))
         cnt = count2[getind2(pr, p0)]
@@ -233,12 +240,19 @@ def add_count(pr, pa, pb, pc):
 
 
 def count_first():
-    count2 = [0] * pp
-    count3 = [0] * ppp
-    count4 = [0] * pppp
+    """各種同卓回数などを計算する (初回用であり、更新は add_count, remove_count で行う)"""
+
+    count2 = [0] * pp  # count2[i]: 2 人組 i の同卓回数
+    count3 = [0] * ppp  # count3[i]: 3 人組 i の同卓回数
+    count4 = [0] * pppp  # count4[i]: 4 人組 i の同卓回数
+
+    # guest_count[i][j]: ゲスト i と一般選手 j の同卓回数 (ゲスト同士の同卓はカウントしない)
     guest_count = [[0] * p for _ in range(g)]
-    guest_count_sum = [0] * p
+    # guest_count_counti[i][j]: ゲスト i との同卓回数が j 回の一般選手数
     guest_count_counti = [[0] * (s + 1) for _ in range(g)]
+    # guest_count_sum[i]: 一般選手 i の、ゲストとの (延べ) 総同卓回数
+    guest_count_sum = [0] * p
+    # guest_count_sum_counti[i]: ゲストとの (延べ) 総同卓回数が i 回の一般選手数
     guest_count_sum_counti = [0] * (s * g + 1)
 
     for takugumi_one in takugumi:
@@ -280,9 +294,9 @@ def count_first():
     for p0 in range(g, p):
         guest_count_sum_counti[guest_count_sum[p0]] += 1
 
-    count2_counti = [0] * (s + 1)
-    count3_counti = [0] * (s + 1)
-    count4_counti = [0] * (s + 1)
+    count2_counti = [0] * (s + 1)  # count2_counti[i]: 同卓回数が i 回の 2 人組の数
+    count3_counti = [0] * (s + 1)  # count3_counti[i]: 同卓回数が i 回の 3 人組の数
+    count4_counti = [0] * (s + 1)  # count4_counti[i]: 同卓回数が i 回の 4 人組の数
 
     for c in count2:
         count2_counti[c] += 1
@@ -332,6 +346,10 @@ def count_first():
 
 
 def calc_cost():
+    """
+    卓組のコスト値を計算する。
+    詳細: https://tomii6614.web.fc2.com/guest_method.html#cost_value
+    """
     # コストには以下の優先順位を定める
     # 0.
     # ゲストとの総同卓回数が 0 回 である一般選手 (=ゲスト以外の選手) の数、
@@ -386,6 +404,10 @@ def calc_cost():
 
 
 def get_rand_takugumi():
+    """
+    初期値の卓組 (一部ゲスト以外は卓番号がランダム) を生成する。
+    詳細: https://tomii6614.web.fc2.com/guest_method.html の「方法」の 1
+    """
     takugumi = []
     for _ in range(s):
         takugumi_one = [-1] * p
@@ -407,9 +429,11 @@ def get_rand_takugumi():
 
 
 def get_result_chofuku(count2, count3, count4):
-    chofuku2 = [[] for _ in range(s + 1)]
-    chofuku3 = [[] for _ in range(s + 1)]
-    chofuku4 = [[] for _ in range(s + 1)]
+    """同卓回数ごとの選手リストを作成する"""
+
+    chofuku2 = [[] for _ in range(s + 1)]  # 同卓回数ごとの 2 人組リスト
+    chofuku3 = [[] for _ in range(s + 1)]  # 同卓回数ごとの 3 人組リスト
+    chofuku4 = [[] for _ in range(s + 1)]  # 同卓回数ごとの 4 人組リスト
 
     for p0 in range(p):
         for p1 in range(p0 + 1, p):
@@ -470,8 +494,8 @@ for i_set in range(sets):
         target1_ind = -1
         while True:
             sind = randint(0, s - 1)
-            target0_ind = randint(1, p - 1)  # 0番目は必ずゲストのため1から
-            target1_ind = randint(1, p - 1)  # 0番目は必ずゲストのため1から
+            target0_ind = randint(1, p - 1)  # 0 番目は必ずゲストのため 1 から
+            target1_ind = randint(1, p - 1)  # 0 番目は必ずゲストのため 1 から
             target0 = takugumi[sind][target0_ind]
             target1 = takugumi[sind][target1_ind]
             if target0_ind // N_GAME != target1_ind // N_GAME and target0 >= g_fix and target1 >= g_fix:
@@ -690,6 +714,8 @@ def txt_to_list(path: str) -> list:
 
 
 def list_to_table(takugumi: list) -> str:
+    """卓組表 takugumi_new を html の table 形式に変換する"""
+
     table_str = '    <table border="1" style="border-collapse: collapse">\n'
 
     table_str += '      <tr align="right">\n'
@@ -716,6 +742,8 @@ def list_to_table(takugumi: list) -> str:
 
 
 def make_cost():
+    """卓組表の下の「コスト値の詳細」「重複同卓者の詳細」項目の作成"""
+
     cost_name = ["どのゲストとも同卓しない選手 (ゲスト以外) の数"]
 
     for g0 in range(g):
