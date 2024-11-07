@@ -686,6 +686,35 @@ def make_cost():
                 ans += f"      <li>{name}: {c}</li>\n"
         ans += "    </ul>\n"
 
+    # 「重複同卓者の詳細」「2 人組の同卓回数」のための集計
+    chofuku4 = [[] for _ in range(s + 1)]
+    chofuku3 = [[] for _ in range(s + 1)]
+    chofuku2 = [[] for _ in range(s + 1)]
+    doutaku2 = [[0] * p for _ in range(p)]
+
+    for p0, p1, p2, p3 in combinations(range(p), 4):
+        cnt = 0
+        for s0 in range(s):
+            if takugumi_new[p0][s0] == takugumi_new[p1][s0] == takugumi_new[p2][s0] == takugumi_new[p3][s0]:
+                cnt += 1
+        chofuku4[cnt].append((p0, p1, p2, p3))
+
+    for p0, p1, p2 in combinations(range(p), 3):
+        cnt = 0
+        for s0 in range(s):
+            if takugumi_new[p0][s0] == takugumi_new[p1][s0] == takugumi_new[p2][s0]:
+                cnt += 1
+        chofuku3[cnt].append((p0, p1, p2))
+
+    for p0, p1 in combinations(range(p), 2):
+        cnt = 0
+        for s0 in range(s):
+            if takugumi_new[p0][s0] == takugumi_new[p1][s0]:
+                cnt += 1
+        chofuku2[cnt].append((p0, p1))
+        doutaku2[p0][p1] = cnt
+        doutaku2[p1][p0] = cnt
+
     # 「重複同卓者の詳細」
     ans += "    <h3>重複同卓者の詳細</h3>\n"
     chofuku2, chofuku3, chofuku4 = get_result_chofuku(count2, count3, count4)
@@ -744,7 +773,7 @@ def make_cost():
         ans += '      <tr align="right">\n'
         ans += f"        <td>選手{p0 + 1}</td>\n"
         for p1 in range(p):
-            val = str(count2[getind2(p0, p1)]) if p0 != p1 else "-"
+            val = str(doutaku2[p0][p1]) if p0 != p1 else "-"
             ans += "        <td>" + val + "</td>\n"
         ans += "      </tr>\n"
     ans += "    </table>\n"
