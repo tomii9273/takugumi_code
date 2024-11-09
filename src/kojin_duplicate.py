@@ -12,7 +12,7 @@ N_GAME = 4  # ゲーム人数 (4 人麻雀)
 t = int(sys.argv[1])  # 卓数
 s = int(sys.argv[2])  # 対戦数
 p = t * N_GAME  # 人数 (ゲスト含む)
-times = 10000  # スワップ試行時に、この回数改善がなければ打ち切る
+times = 2500  # スワップ試行時に、この回数改善がなければ打ち切る
 sets = 200  # 初期値を変えて何セット試行するか
 
 sys.stdout = DualOutput(f"{t}taku_{s}sen_{datetime.datetime.now().isoformat().replace(':','-')}.log")
