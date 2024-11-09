@@ -14,6 +14,7 @@ s = int(sys.argv[2])  # 対戦数
 p = t * N_GAME  # 人数 (ゲスト含む)
 times = 2500  # スワップ試行時に、この回数改善がなければ打ち切る
 sets = 200  # 初期値を変えて何セット試行するか
+fix = True  # True: 先頭数戦の卓組を完全に固定する (初期値で固定後交換しない)、False: 先頭数戦の卓組を初期値では固定するが、その後の交換はする
 
 sys.stdout = DualOutput(f"{t}taku_{s}sen_{datetime.datetime.now().isoformat().replace(':','-')}.log")
 
@@ -23,6 +24,7 @@ print("s", s)
 print("p", p)
 print("times", times)
 print("sets", sets)
+print("fix", fix)
 
 # 先頭数戦の卓組を固定する場合、fix_takugumi.txt に指定する
 if os.path.exists("fix_takugumi.txt"):
@@ -36,6 +38,12 @@ if os.path.exists("fix_takugumi.txt"):
 else:
     FIX_TAKUGUMI = []
 print("FIX_TAKUGUMI", FIX_TAKUGUMI)
+
+if fix:
+    rand_s_left = len(FIX_TAKUGUMI)
+else:
+    rand_s_left = 0
+print("rand_s_left", rand_s_left)
 
 assert 1 <= t
 assert 1 <= s
@@ -425,7 +433,7 @@ for i_set in range(sets):
         choice_type = randint(0, 1)
         if choice_type == 0:
             while True:
-                sind = randint(len(FIX_TAKUGUMI), s - 1)
+                sind = randint(rand_s_left, s - 1)
                 target0_ind = randint(0, p - 1)
                 target1_ind = randint(0, p - 1)
                 target0 = takugumi[sind][target0_ind]
@@ -434,7 +442,7 @@ for i_set in range(sets):
                     break
         else:
             while True:
-                sind = randint(len(FIX_TAKUGUMI), s - 1)
+                sind = randint(rand_s_left, s - 1)
                 target0 = target_yuusen[randint(0, len(target_yuusen) - 1)]
                 target0_ind = takugumi[sind].index(target0)
                 target1_ind = randint(0, p - 1)
