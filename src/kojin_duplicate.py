@@ -578,7 +578,7 @@ cost = calc_cost()
 
 assert cost == best_cost
 
-assert best_takugumi[: min(s, len(FIX_TAKUGUMI))] == FIX_TAKUGUMI[: min(s, len(FIX_TAKUGUMI))]
+assert best_takugumi[: min(s, rand_s_left)] == FIX_TAKUGUMI[: min(s, rand_s_left)]
 
 print("best_cost", best_cost)
 print("found")
