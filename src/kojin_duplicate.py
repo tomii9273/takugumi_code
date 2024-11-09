@@ -725,7 +725,6 @@ def make_cost():
 
     # 「重複同卓者の詳細」
     ans += "    <h3>重複同卓者の詳細</h3>\n"
-    chofuku2, chofuku3, chofuku4 = get_result_chofuku(count2, count3, count4)
     if (
         all(len(chofuku2[s0]) == 0 for s0 in range(s, 1, -1))
         and all(len(chofuku3[s0]) == 0 for s0 in range(s, 1, -1))
