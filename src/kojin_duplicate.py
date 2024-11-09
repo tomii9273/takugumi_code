@@ -1,26 +1,53 @@
+import datetime
+import json
+import os
 import sys
 import time
 from itertools import combinations
 from random import randint, shuffle
 
-N_GAME = 4  # ゲーム人数 (4 人麻雀)
-g = int(sys.argv[1])  # ゲスト人数
-t = int(sys.argv[2])  # 卓数
-s = int(sys.argv[3])  # 対戦数
-p = t * N_GAME  # 人数 (ゲスト含む)
-times = 50000  # スワップ試行時に、この回数改善がなければ打ち切る (本実行では 50000)
-sets = 10  # 初期値を変えて何セット試行するか (本実行では 10)
+from utils import DualOutput
 
-assert 1 <= g
+N_GAME = 4  # ゲーム人数 (4 人麻雀)
+t = int(sys.argv[1])  # 卓数
+s = int(sys.argv[2])  # 対戦数
+p = t * N_GAME  # 人数 (ゲスト含む)
+times = 2500  # スワップ試行時に、この回数改善がなければ打ち切る
+sets = 200  # 初期値を変えて何セット試行するか
+fix = True  # True: 先頭数戦の卓組を完全に固定する (初期値で固定後交換しない)、False: 先頭数戦の卓組を初期値では固定するが、その後の交換はする
+
+sys.stdout = DualOutput(f"{t}taku_{s}sen_{datetime.datetime.now().isoformat().replace(':','-')}.log")
+
+print("N_GAME", N_GAME)
+print("t", t)
+print("s", s)
+print("p", p)
+print("times", times)
+print("sets", sets)
+print("fix", fix)
+
+# 先頭数戦の卓組を固定する場合、fix_takugumi.txt に指定する
+if os.path.exists("fix_takugumi.txt"):
+    with open("fix_takugumi.txt", "r") as file:
+        value = file.read().replace("\n", "")
+    if value != "":
+        with open("fix_takugumi.txt", "r") as file:
+            FIX_TAKUGUMI = json.load(file)
+    else:
+        FIX_TAKUGUMI = []
+else:
+    FIX_TAKUGUMI = []
+print("FIX_TAKUGUMI", FIX_TAKUGUMI)
+
+if fix:
+    rand_s_left = len(FIX_TAKUGUMI)
+else:
+    rand_s_left = 0
+print("rand_s_left", rand_s_left)
+
 assert 1 <= t
 assert 1 <= s
-assert 3 * g * s >= p - g  # (ゲストの対戦可能総人数) >= (一般選手数)
-
-if g > t:
-    g_fix = 1  # 卓を固定するゲストの人数
-else:
-    g_fix = g
-
+assert all(len(item) == p for item in FIX_TAKUGUMI)
 
 start_time = time.time()
 
@@ -100,51 +127,6 @@ def remove_count(pr, pa, pb, pc):
     count4_counti[cnt] -= 1
     count4_counti[cnt - 1] += 1
 
-    if pr < g:
-        for p0 in [pa, pb, pc]:
-            if p0 >= g:
-                cnt = guest_count[pr][p0]
-                guest_count_counti[pr][cnt] -= 1
-                guest_count_counti[pr][cnt - 1] += 1
-                guest_count[pr][p0] -= 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt - 1] += 1
-                guest_count_sum[p0] -= 1
-    if pa < g:
-        for p0 in [pr, pb, pc]:
-            if p0 >= g:
-                cnt = guest_count[pa][p0]
-                guest_count_counti[pa][cnt] -= 1
-                guest_count_counti[pa][cnt - 1] += 1
-                guest_count[pa][p0] -= 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt - 1] += 1
-                guest_count_sum[p0] -= 1
-    if pb < g:
-        for p0 in [pr, pa, pc]:
-            if p0 >= g:
-                cnt = guest_count[pb][p0]
-                guest_count_counti[pb][cnt] -= 1
-                guest_count_counti[pb][cnt - 1] += 1
-                guest_count[pb][p0] -= 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt - 1] += 1
-                guest_count_sum[p0] -= 1
-    if pc < g:
-        for p0 in [pr, pa, pb]:
-            if p0 >= g:
-                cnt = guest_count[pc][p0]
-                guest_count_counti[pc][cnt] -= 1
-                guest_count_counti[pc][cnt - 1] += 1
-                guest_count[pc][p0] -= 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt - 1] += 1
-                guest_count_sum[p0] -= 1
-
 
 def add_count(pr, pa, pb, pc):
     """選手 pr の、pa, pb, pc との同卓を追加する (各種同卓回数などを 1 増やす)"""
@@ -193,51 +175,6 @@ def add_count(pr, pa, pb, pc):
     count4_counti[cnt] -= 1
     count4_counti[cnt + 1] += 1
 
-    if pr < g:
-        for p0 in [pa, pb, pc]:
-            if p0 >= g:
-                cnt = guest_count[pr][p0]
-                guest_count_counti[pr][cnt] -= 1
-                guest_count_counti[pr][cnt + 1] += 1
-                guest_count[pr][p0] += 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt + 1] += 1
-                guest_count_sum[p0] += 1
-    if pa < g:
-        for p0 in [pr, pb, pc]:
-            if p0 >= g:
-                cnt = guest_count[pa][p0]
-                guest_count_counti[pa][cnt] -= 1
-                guest_count_counti[pa][cnt + 1] += 1
-                guest_count[pa][p0] += 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt + 1] += 1
-                guest_count_sum[p0] += 1
-    if pb < g:
-        for p0 in [pr, pa, pc]:
-            if p0 >= g:
-                cnt = guest_count[pb][p0]
-                guest_count_counti[pb][cnt] -= 1
-                guest_count_counti[pb][cnt + 1] += 1
-                guest_count[pb][p0] += 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt + 1] += 1
-                guest_count_sum[p0] += 1
-    if pc < g:
-        for p0 in [pr, pa, pb]:
-            if p0 >= g:
-                cnt = guest_count[pc][p0]
-                guest_count_counti[pc][cnt] -= 1
-                guest_count_counti[pc][cnt + 1] += 1
-                guest_count[pc][p0] += 1
-                cnt = guest_count_sum[p0]
-                guest_count_sum_counti[cnt] -= 1
-                guest_count_sum_counti[cnt + 1] += 1
-                guest_count_sum[p0] += 1
-
 
 def count_first():
     """各種同卓回数などを計算する (初回用であり、更新は add_count, remove_count で行う)"""
@@ -246,15 +183,6 @@ def count_first():
     count3 = [0] * ppp  # count3[i]: 3 人組 i の同卓回数
     count4 = [0] * pppp  # count4[i]: 4 人組 i の同卓回数
 
-    # guest_count[i][j]: ゲスト i と一般選手 j の同卓回数 (ゲスト同士の同卓はカウントしない)
-    guest_count = [[0] * p for _ in range(g)]
-    # guest_count_counti[i][j]: ゲスト i との同卓回数が j 回の一般選手数
-    guest_count_counti = [[0] * (s + 1) for _ in range(g)]
-    # guest_count_sum[i]: 一般選手 i の、ゲストとの (延べ) 総同卓回数
-    guest_count_sum = [0] * p
-    # guest_count_sum_counti[i]: ゲストとの (延べ) 総同卓回数が i 回の一般選手数
-    guest_count_sum_counti = [0] * (s * g + 1)
-
     for takugumi_one in takugumi:
         for tind in range(t):
             for ind0 in range(N_GAME):
@@ -262,12 +190,6 @@ def count_first():
                     p0 = takugumi_one[tind * N_GAME + ind0]
                     p1 = takugumi_one[tind * N_GAME + ind1]
                     count2[getind2(p0, p1)] += 1
-                    if p0 < g and p1 >= g:
-                        guest_count[p0][p1] += 1
-                        guest_count_sum[p1] += 1
-                    if p1 < g and p0 >= g:
-                        guest_count[p1][p0] += 1
-                        guest_count_sum[p0] += 1
 
             for ind0 in range(N_GAME):
                 for ind1 in range(ind0 + 1, N_GAME):
@@ -287,12 +209,6 @@ def count_first():
                     takugumi_one[tind * N_GAME + 3],
                 )
             ] += 1
-
-    for g0 in range(g):
-        for p0 in range(g, p):
-            guest_count_counti[g0][guest_count[g0][p0]] += 1
-    for p0 in range(g, p):
-        guest_count_sum_counti[guest_count_sum[p0]] += 1
 
     count2_counti = [0] * (s + 1)  # count2_counti[i]: 同卓回数が i 回の 2 人組の数
     count3_counti = [0] * (s + 1)  # count3_counti[i]: 同卓回数が i 回の 3 人組の数
@@ -332,10 +248,6 @@ def count_first():
         count2_counti,
         count3_counti,
         count4_counti,
-        guest_count,
-        guest_count_counti,
-        guest_count_sum,
-        guest_count_sum_counti,
         chofuku2,
         chofuku3,
         chofuku4,
@@ -350,40 +262,8 @@ def calc_cost():
     卓組のコスト値を計算する。
     詳細: https://tomii6614.web.fc2.com/guest_method.html#cost_value
     """
+    cost = []
     # コストには以下の優先順位を定める
-    # 0.
-    # ゲストとの総同卓回数が 0 回 である一般選手 (=ゲスト以外の選手) の数、
-    # ゲスト1と同卓しない一般選手数、...、ゲストgと同卓しない一般選手数
-    cost = [guest_count_sum_counti[0]]
-    for g0 in range(g):
-        cost.append(guest_count_counti[g0][0])
-
-    if g > t:
-        # 1. [ゲスト同士の同卓がある場合のみ]
-        # ゲスト同士の同卓回数の総和、他ゲストとの同卓回数が最も多いゲストと最も少ないゲストの回数差
-        g_sum_all = 0
-        g_sums = [0] * g
-        for g0 in range(g):
-            for g1 in range(g0 + 1, g):
-                # guest_count はゲスト同士の同卓をカウントしていないので、count2 から計算
-                cnt = count2[getind2(g0, g1)]
-                g_sum_all += cnt
-                g_sums[g0] += cnt
-                g_sums[g1] += cnt
-        cost.append(g_sum_all)
-        cost.append(max(g_sums) - min(g_sums))
-
-    # 2.
-    # ゲストとの (延べ) 総同卓回数が s*g 回である一般選手数、...、ゲストとの (延べ) 総同卓回数が 2 回である一般選手数、
-    # ゲスト1とs回同卓する一般選手数、...、ゲストgとs回同卓する一般選手数、
-    # ...
-    # ゲスト1と2回同卓する一般選手数、...、ゲストgと2回同卓する一般選手数
-    for i in range(s * g, 1, -1):
-        cost.append(guest_count_sum_counti[i])
-    for i in range(s, 1, -1):
-        for g0 in range(g):
-            cost.append(guest_count_counti[g0][i])
-
     # 3. s回同卓する4人組数、s回同卓する3人組数、s回同卓する2人組数、...、2回同卓する4人組数、2回同卓する3人組数、2回同卓する2人組数
     for i in range(s, 1, -1):
         cost.append(count4_counti[i])
@@ -405,25 +285,66 @@ def calc_cost():
 
 def get_rand_takugumi():
     """
-    初期値の卓組 (一部ゲスト以外は卓番号がランダム) を生成する。
+    初期値の卓組 (卓番号がランダム) を生成する。
     詳細: https://tomii6614.web.fc2.com/guest_method.html の「方法」の 1
     """
-    takugumi = []
-    for _ in range(s):
-        takugumi_one = [-1] * p
-        gind = 0
-        for i in range(g_fix):
-            takugumi_one[gind] = i
-            gind += N_GAME
-        ind = 0
-        tmp = list(range(g_fix, p))
-        shuffle(tmp)
-        for i in range(len(tmp)):
-            while takugumi_one[ind] != -1:
-                ind += 1
-            takugumi_one[ind] = tmp[i]
+    # 5卓6戦重複なし用
+    # takugumi = [[-1] * p for _ in range(5)]
+    # for s0 in range(5):
+    #     takugumi_pre = [-1] * p
+    #     for t0 in range(5):
+    #         for g0 in range(4):
+    #             takugumi_pre[t0 + g0 * t] = (t0 + g0 * s0) % t
+    #     ind = 0
+    #     for tt in range(5):
+    #         for ii in range(p):
+    #             if takugumi_pre[ii] == tt:
+    #                 takugumi[s0][ind] = ii
+    #                 ind += 1
+    # print(takugumi)
+    # takugumi_one = list(range(p))
+    # shuffle(takugumi_one)
+    # takugumi.append(takugumi_one)
 
-        takugumi.append(takugumi_one)
+    # 7卓18戦重複なし用
+    # takugumi_pre = [
+    #     [1, 1, 3, 6, 7, 2, 2, 7, 6, 3, 1, 5, 4, 2, 3, 3, 2, 4, 5, 1, 4, 7, 5, 6, 6, 5, 7, 4],
+    #     [1, 3, 1, 3, 6, 7, 2, 2, 7, 6, 5, 1, 5, 4, 2, 3, 3, 2, 4, 4, 1, 4, 7, 5, 6, 6, 5, 7],
+    #     [1, 6, 3, 1, 3, 6, 7, 2, 2, 7, 4, 5, 1, 5, 4, 2, 3, 3, 2, 7, 4, 1, 4, 7, 5, 6, 6, 5],
+    #     [1, 7, 6, 3, 1, 3, 6, 7, 2, 2, 2, 4, 5, 1, 5, 4, 2, 3, 3, 5, 7, 4, 1, 4, 7, 5, 6, 6],
+    #     [1, 2, 7, 6, 3, 1, 3, 6, 7, 2, 3, 2, 4, 5, 1, 5, 4, 2, 3, 6, 5, 7, 4, 1, 4, 7, 5, 6],
+    #     [1, 2, 2, 7, 6, 3, 1, 3, 6, 7, 3, 3, 2, 4, 5, 1, 5, 4, 2, 6, 6, 5, 7, 4, 1, 4, 7, 5],
+    #     [1, 7, 2, 2, 7, 6, 3, 1, 3, 6, 2, 3, 3, 2, 4, 5, 1, 5, 4, 5, 6, 6, 5, 7, 4, 1, 4, 7],
+    #     [1, 6, 7, 2, 2, 7, 6, 3, 1, 3, 4, 2, 3, 3, 2, 4, 5, 1, 5, 7, 5, 6, 6, 5, 7, 4, 1, 4],
+    #     [1, 3, 6, 7, 2, 2, 7, 6, 3, 1, 5, 4, 2, 3, 3, 2, 4, 5, 1, 4, 7, 5, 6, 6, 5, 7, 4, 1],
+    #     [1, 1, 3, 6, 7, 2, 2, 7, 6, 3, 4, 2, 3, 5, 1, 4, 7, 4, 6, 7, 5, 3, 5, 4, 5, 1, 6, 2],
+    #     [1, 3, 1, 3, 6, 7, 2, 2, 7, 6, 5, 3, 2, 1, 5, 2, 4, 7, 6, 5, 4, 3, 6, 1, 7, 4, 5, 4],
+    #     [1, 6, 3, 1, 3, 6, 7, 2, 2, 7, 1, 3, 4, 5, 4, 3, 1, 5, 5, 6, 2, 2, 6, 4, 4, 7, 7, 5],
+    #     [1, 7, 6, 3, 1, 3, 6, 7, 2, 2, 5, 2, 5, 4, 2, 3, 4, 6, 7, 6, 3, 4, 5, 7, 1, 5, 4, 1],
+    #     [1, 2, 7, 6, 3, 1, 3, 6, 7, 2, 4, 4, 1, 2, 3, 2, 7, 6, 4, 5, 3, 5, 7, 5, 4, 6, 1, 5],
+    #     [1, 2, 2, 7, 6, 3, 1, 3, 6, 7, 2, 5, 5, 3, 3, 4, 5, 5, 1, 7, 2, 1, 4, 6, 7, 6, 4, 4],
+    #     [1, 7, 2, 2, 7, 6, 3, 1, 3, 6, 3, 1, 4, 3, 2, 5, 6, 7, 4, 4, 4, 5, 1, 6, 5, 5, 7, 2],
+    #     [1, 6, 7, 2, 2, 7, 6, 3, 1, 3, 3, 5, 2, 2, 4, 1, 6, 4, 7, 1, 5, 4, 4, 5, 6, 7, 5, 3],
+    #     [1, 3, 6, 7, 2, 2, 7, 6, 3, 1, 2, 4, 3, 4, 5, 5, 5, 1, 5, 4, 1, 2, 7, 7, 6, 4, 6, 3],
+    # ]
+    # takugumi = [[-1] * p for _ in range(s)]
+    # for s0 in range(s):
+    #     ind = 0
+    #     for tt in range(t):
+    #         for ii in range(p):
+    #             if takugumi_pre[s0][ii] == tt + 1:
+    #                 takugumi[s0][ind] = ii
+    #                 ind += 1
+
+    # 通常
+    takugumi = []
+    for i in range(s):
+        if i < len(FIX_TAKUGUMI):
+            takugumi.append(FIX_TAKUGUMI[i][:])
+        else:
+            takugumi_one = list(range(p))
+            shuffle(takugumi_one)
+            takugumi.append(takugumi_one)
 
     return takugumi
 
@@ -469,10 +390,6 @@ for i_set in range(sets):
         count2_counti,
         count3_counti,
         count4_counti,
-        guest_count,
-        guest_count_counti,
-        guest_count_sum,
-        guest_count_sum_counti,
         chofuku2,
         chofuku3,
         chofuku4,
@@ -480,10 +397,15 @@ for i_set in range(sets):
         chofuku3_tmps,
         chofuku4_tmps,
     ) = count_first()
-    cost = calc_cost()
 
+    cost = calc_cost()
     print("first_cost", cost)
-    print("first_guest_count", guest_count)
+
+    if len(FIX_TAKUGUMI) >= s:
+        print("FIX_TAKUGUMI 全体またはその先頭部分をそのまま使用します")
+        best_cost = cost
+        best_takugumi = takugumi
+        break
 
     time_count = 0
     time_count_all = 0
@@ -492,14 +414,42 @@ for i_set in range(sets):
         # print(cost, guest_count)
         target0_ind = -1
         target1_ind = -1
-        while True:
-            sind = randint(0, s - 1)
-            target0_ind = randint(1, p - 1)  # 0 番目は必ずゲストのため 1 から
-            target1_ind = randint(1, p - 1)  # 0 番目は必ずゲストのため 1 から
-            target0 = takugumi[sind][target0_ind]
-            target1 = takugumi[sind][target1_ind]
-            if target0_ind // N_GAME != target1_ind // N_GAME and target0 >= g_fix and target1 >= g_fix:
+
+        target_yuusen = []
+        for s0 in range(s, 1, -1):
+            if len(chofuku4[s0]) > 0:
+                for p0, p1, p2, p3 in chofuku4[s0]:
+                    target_yuusen += [p0, p1, p2, p3]
                 break
+            if len(chofuku3[s0]) > 0:
+                for p0, p1, p2 in chofuku3[s0]:
+                    target_yuusen += [p0, p1, p2]
+                break
+            if len(chofuku2[s0]) > 0:
+                for p0, p1 in chofuku2[s0]:
+                    target_yuusen += [p0, p1]
+                break
+
+        choice_type = randint(0, 1)
+        if choice_type == 0:
+            while True:
+                sind = randint(rand_s_left, s - 1)
+                target0_ind = randint(0, p - 1)
+                target1_ind = randint(0, p - 1)
+                target0 = takugumi[sind][target0_ind]
+                target1 = takugumi[sind][target1_ind]
+                if target0_ind // N_GAME != target1_ind // N_GAME:
+                    break
+        else:
+            while True:
+                sind = randint(rand_s_left, s - 1)
+                target0 = target_yuusen[randint(0, len(target_yuusen) - 1)]
+                target0_ind = takugumi[sind].index(target0)
+                target1_ind = randint(0, p - 1)
+                target1 = takugumi[sind][target1_ind]
+                if target0_ind // N_GAME != target1_ind // N_GAME:
+                    break
+
         taku_0 = target0_ind // N_GAME
         taku_1 = target1_ind // N_GAME
         taku_0_p0 = takugumi[sind][taku_0 * N_GAME + (target0_ind % 4 + 1) % 4]
@@ -563,10 +513,6 @@ for i_set in range(sets):
         count2_counti_,
         count3_counti_,
         count4_counti_,
-        guest_count_,
-        guest_count_counti_,
-        guest_count_sum_,
-        guest_count_sum_counti_,
         chofuku2_,
         chofuku3_,
         chofuku4_,
@@ -581,22 +527,12 @@ for i_set in range(sets):
     assert count2_counti == count2_counti_
     assert count3_counti == count3_counti_
     assert count4_counti == count4_counti_
-    assert guest_count == guest_count_
-    assert guest_count_counti == guest_count_counti_
-    assert guest_count_sum == guest_count_sum_
-    assert guest_count_sum_counti == guest_count_sum_counti_
     assert chofuku2 == chofuku2_
     assert chofuku3 == chofuku3_
     assert chofuku4 == chofuku4_
     assert chofuku2_tmps == chofuku2_tmps_
     assert chofuku3_tmps == chofuku3_tmps_
     assert chofuku4_tmps == chofuku4_tmps_
-
-    # guest_count ではゲスト同士の同卓をカウントしないはず
-    for g0 in range(g):
-        assert guest_count_sum[g0] == 0
-        for g1 in range(g):
-            assert guest_count[g0][g1] == 0
 
     cost_ = calc_cost()
     assert cost == cost_
@@ -607,13 +543,19 @@ for i_set in range(sets):
     print("final_chofuku2(2-)", chofuku2[2:])
     print("final_chofuku3(2-)", chofuku3[2:])
     print("final_chofuku4(2-)", chofuku4[2:])
-    print("final_guest_count", guest_count)
 
     if best_cost == [] or cost < best_cost:
         best_cost = cost
         best_takugumi = takugumi
+        print("best_cost_new", best_cost)
+        print("best_takugumi_new", best_takugumi)
         if sum(best_cost) == 0:
             break
+
+    if i_set % 1000 == 0:
+        print("i_set", i_set)
+        print("best_cost_now", best_cost)
+        print("best_takugumi_now", best_takugumi)
 
 
 print("best_takugumi", best_takugumi)
@@ -625,10 +567,6 @@ takugumi = best_takugumi
     count2_counti,
     count3_counti,
     count4_counti,
-    guest_count,
-    guest_count_counti,
-    guest_count_sum,
-    guest_count_sum_counti,
     chofuku2,
     chofuku3,
     chofuku4,
@@ -640,52 +578,34 @@ cost = calc_cost()
 
 assert cost == best_cost
 
+assert best_takugumi[: min(s, rand_s_left)] == FIX_TAKUGUMI[: min(s, rand_s_left)]
+
 print("best_cost", best_cost)
-
-if best_cost[0] == 0:
-    print("found")
-else:
-    print("notfound")
-    sys.exit()
-
+print("found")
 
 # ----------------- 卓組ページ html の作成 -----------------
 
-
-n_col = s
-if g == 1:
-    n_col += 1  # ゲストとの同卓回数
-else:
-    n_col += g + 1  # ゲストxとの同卓回数、いずれかのゲストとの同卓回数
-
-takugumi_new = [[0] * n_col for _ in range(p)]
+# takugumi_new[i][j]: 選手 i の j 戦目の卓番号 (1-indexed)
+takugumi_new = [[0] * s for _ in range(p)]
 
 for sind in range(s):
     for pind in range(p):
         p0 = takugumi[sind][pind]
         takugumi_new[p0][sind] = pind // N_GAME + 1
 
-for p0 in range(p):
-    for g0 in range(g):
-        takugumi_new[p0][s + g0] = guest_count[g0][p0]
-for g0 in range(g):
-    for g1 in range(g):
-        takugumi_new[g0][s + g1] += count2[getind2(g0, g1)]
+takugumi_new.sort()  # 選手を、卓番号配列の辞書順に並び替える
 
-if g > 1:
-    for p0 in range(p):
-        takugumi_new[p0][-1] = sum(takugumi_new[p0][-1 - g : -1])
+# fix_takugumi 用に、best_takugumi と同じ形式でも出力する
+best_takugumi_sorted = [[] for _ in range(s)]
+for s0 in range(s):
+    for t0 in range(t):
+        for p0 in range(p):
+            if takugumi_new[p0][s0] == t0 + 1:
+                best_takugumi_sorted[s0].append(p0)
 
-if g == 1:
-    takugumi_new[g:] = sorted(takugumi_new[g:], key=lambda x: x[s], reverse=True)
-else:
-    for g0 in range(g - 1, -1, -1):
-        takugumi_new[g:] = sorted(takugumi_new[g:], key=lambda x: x[s + g0], reverse=True)
-    takugumi_new[g:] = sorted(takugumi_new[g:], key=lambda x: x[s + g], reverse=True)
-
-print("takugumi_new", takugumi_new)  # ゲストとの同卓回数の列を追加した卓組表
-
-# 選手番号のミスを直す
+print("takugumi_new", takugumi_new)
+print("best_takugumi_sorted", best_takugumi_sorted)
+print("FIX_TAKUGUMI", FIX_TAKUGUMI)
 
 
 def make_header(title: str) -> str:
@@ -724,17 +644,11 @@ def list_to_table(takugumi: list) -> str:
     table_str += "        <td></td>\n"
     for taisen_ind in range(s):
         table_str += f"        <td>{taisen_ind + 1}戦目</td>\n"
-    if g == 1:
-        table_str += "        <td>ゲストとの同卓回数</td>\n"
-    else:
-        for g_ind in range(g):
-            table_str += f"        <td>ゲスト{g_ind + 1}との同卓回数</td>\n"
-        table_str += "        <td>ゲストとの総同卓回数</td>\n"
     table_str += "      </tr>\n"
 
     for player_ind, row in enumerate(takugumi):
         table_str += '      <tr align="right">\n'
-        player_type = "ゲスト" if player_ind < g else "選手"
+        player_type = "選手"
         table_str += f"        <td>{player_type}{player_ind + 1}</td>\n"
         for col in row:
             table_str += "        <td>" + str(col) + "</td>\n"
@@ -744,24 +658,12 @@ def list_to_table(takugumi: list) -> str:
 
 
 def make_cost():
-    """卓組表の下の「コスト値の詳細」「重複同卓者の詳細」項目の作成"""
+    """卓組表の下の「コスト値の詳細」「重複同卓者の詳細」「2 人組の同卓回数」項目の作成"""
+    # 「コスト値の詳細」
 
-    cost_name = ["どのゲストとも同卓しない選手 (ゲスト以外) の数"]
+    cost_name = []
 
-    for g0 in range(g):
-        cost_name.append(f"ゲスト {g0+1} と同卓しない選手 (ゲスト以外) の数")
-
-    if g > t:
-        cost_name.append("ゲスト同士の同卓回数の総和")
-        cost_name.append("他ゲストとの同卓回数が最も多いゲストと最も少ないゲストの回数差")
-
-    for sg0 in range(s * g, 1, -1):
-        cost_name.append(f"ゲストとの総同卓回数が {sg0} 回である選手 (ゲスト以外) の数")
-    for s0 in range(s, 1, -1):
-        for g0 in range(g):
-            cost_name.append(f"ゲスト {g0+1} と {s0} 回同卓する選手 (ゲスト以外) の数")
-
-    cost_assert_ind = len(cost_name)
+    cost_assert_ind = 0
 
     for s0 in range(s, 1, -1):
         cost_name += [
@@ -778,10 +680,10 @@ def make_cost():
         ]
 
     assert len(cost_name) == len(cost)
-    assert cost[0] == 0
+    # assert cost[0] == 0
 
     ans = ""
-    ans += '    <h3><a href="../guest_method.html#cost_value">コスト値</a>の詳細</h3>\n'
+    ans += '    <h3><a href="../kojin_duplicate_method.html#cost_value">コスト値</a>の詳細</h3>\n'
     if all(c == 0 for c in cost):
         ans += "    <p>コスト値はすべて 0。</p>\n"
     else:
@@ -871,22 +773,17 @@ def make_cost():
     ans += '      <tr align="right">\n'
     ans += "        <td></td>\n"
     for p0 in range(p):
-        player_type = "ゲスト" if p0 < g else "選手"
-        ans += f"        <td>{player_type}{p0 + 1}</td>\n"
+        ans += f"        <td>選手{p0 + 1}</td>\n"
     ans += "      </tr>\n"
 
     for p0 in range(p):
-        player_type = "ゲスト" if p0 < g else "選手"
         ans += '      <tr align="right">\n'
-        ans += f"        <td>{player_type}{p0 + 1}</td>\n"
+        ans += f"        <td>選手{p0 + 1}</td>\n"
         for p1 in range(p):
             val = str(doutaku2[p0][p1]) if p0 != p1 else "-"
             ans += "        <td>" + val + "</td>\n"
         ans += "      </tr>\n"
     ans += "    </table>\n"
-
-    ans += "  </body>\n"
-    ans += "</html>\n"
     return ans
 
 
@@ -895,8 +792,12 @@ def takugumi_to_html(takugumi: list, title: str) -> str:
     return make_header(title) + list_to_table(takugumi) + make_cost() + make_footer()
 
 
-with open(f"{t}taku_{p}nin_{s}sen_{g}guest.html", "w", encoding="utf-8") as f:
-    f.write(takugumi_to_html(takugumi_new, f"{t} 卓 {p} 人 {s} 戦 {g} ゲスト"))
+with open(f"{t}taku_{p}nin_{s}sen_kojin.html", "w", encoding="utf-8") as f:
+    f.write(takugumi_to_html(takugumi_new, f"{t} 卓 {p} 人 {s} 戦"))
 
 end_time = time.time()
-print("time[s]:", end_time - start_time)
+print("time [sec]:", end_time - start_time)
+print("time [min]:", (end_time - start_time) / 60)
+
+sys.stdout.close()
+sys.stdout = sys.__stdout__

@@ -1,4 +1,6 @@
 import os
+import sys
+
 import numpy as np
 
 TAKUGUMI_DIR = "../takugumi_txt"  # 元にする卓組ファイルがあるディレクトリ
@@ -134,3 +136,29 @@ def array_to_txt(takugumi: np.ndarray, filename: str) -> None:
                 f.write(w)  # ここで転置する
                 f.write("\t")
             f.write("\n")
+
+
+class DualOutput:
+    """
+    標準出力とファイル出力の両方に出力するクラス
+    使用例
+    sys.stdout = DualOutput("output.txt")  # sys.stdout をカスタムクラスに設定
+    print("このメッセージはコンソールと output.txt の両方に出力されます。")
+    sys.stdout.close()  # 終わったらファイルを閉じる
+    sys.stdout = sys.__stdout__  # 標準出力を元に戻す (プログラムの最後でも書かないとエラーになる)
+    """
+
+    def __init__(self, filename):
+        self.console = sys.stdout  # 元の標準出力を保持
+        self.file = open(filename, "w", encoding="utf-8")  # 書き込みモードでファイルを開く
+
+    def write(self, message):
+        self.console.write(message)  # コンソールに出力
+        self.file.write(message)  # ファイルにも出力
+
+    def flush(self):
+        self.console.flush()
+        self.file.flush()
+
+    def close(self):
+        self.file.close()
